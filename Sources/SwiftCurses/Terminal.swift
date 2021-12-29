@@ -163,7 +163,7 @@ extension Terminal {
 
 //Get characters
 extension Terminal {
-    func getKey() -> Int32 {
+    public func getKey() -> Int32 {
         return getch()
     }
 }
