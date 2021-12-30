@@ -145,7 +145,7 @@ extension Terminal {
     }
     
     public func print(string: String) {
-        var cString = string.utf8CString
+        var cString = string.cString(using: .ascii)!
         addstr(&cString[0])
     }
     
