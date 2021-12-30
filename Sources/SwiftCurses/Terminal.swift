@@ -59,7 +59,6 @@ public class Terminal {
         // sets the locale and associated available characters based on the calling program
         setlocale(LC_ALL, "")
         ncurses.initscr()
-        
         self.standardScreen = stdscr
         self.cursor = Cursor(window: stdscr)
         try? self.set(mode: mode)
