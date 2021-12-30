@@ -1,5 +1,6 @@
 module ncurses {
     header "cncurses.h"
-    link "ncurses"
+    link "ncursesw"
+    
     export *
 }
