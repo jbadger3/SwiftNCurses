@@ -36,6 +36,8 @@ public class Terminal {
     
     public private(set) var keypadEnabled: Bool = true
     
+    public let cursor: Cursor
+    
     public var hasColors: Bool {
         return has_colors()
     }
@@ -59,6 +61,7 @@ public class Terminal {
         ncurses.initscr()
         
         self.standardScreen = stdscr
+        self.cursor = Cursor(window: stdscr)
         try? self.set(mode: mode)
         self.set(echoing: echoing)
         self.set(keypadEnabled: keypadEnabled)
