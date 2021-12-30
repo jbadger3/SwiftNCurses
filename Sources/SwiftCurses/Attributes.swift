@@ -34,7 +34,8 @@ public struct Attributes: OptionSet {
     //need to check this
     //static let charText = Attributes(rawValue: 1 << 8 - 1)
     
-    
+    //#define A_ITALIC    NCURSES_BITS(1U,23)
+    public static let italic = Attributes(rawValue: 1 << (8 + 23))
     /*
                    A_NORMAL        Normal display (no highlight)
                    A_STANDOUT      Best highlighting mode of the terminal.
