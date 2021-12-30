@@ -11,41 +11,7 @@ import ncurses
  */
 public class Terminal {
     
-    public enum Mode {
-        ///
-        /// Makes all keypresses immediately available.
-        case raw
-        
-        /// The results of input are buffered until a newline or carrage return.  This the default terminal mode, sometimes refereed to as 'cooked' mode.
-        case noraw
-        
-        /// Makes keypresses immediately available, except ctrl-c and ctrl-z are passed to the terminal driver allowing for
-        case cbreak
-        
-        /// The results of input are buffered until a newline or carrage return.  This the default terminal mode, sometimes refereed to as 'cooked' mode.
-        case nocbreak
-        
-        /** Makes keyboard presses immediately available and returns an error if no input is provided after a specified `timeout` (in tenths of seconds)
-        
-            * Use .nocbreak to switch out of halfdelay mode
-         */
-        case halfdelay(timout: Int)
-        
-        //Modes to consider adding in the future
-        /*
-         int intrflush(WINDOW *win, bool bf);
-         int meta(WINDOW *win, bool bf);
-         int nodelay(WINDOW *win, bool bf);
 
-         void noqiflush(void);
-         void qiflush(void);
-         int notimeout(WINDOW *win, bool bf);
-         void timeout(int delay);
-         void wtimeout(WINDOW *win, int delay);
-         int typeahead(int fd);
-
-         */
-    }
     public static var shared = Terminal()
     
     public var lines: Int {
@@ -65,7 +31,7 @@ public class Terminal {
     
 
     
-    public private(set) var currentMode: Mode = .raw
+    public private(set) var currentMode: InputMode = .raw
     
     public private(set) var echoing: Bool = false
     
@@ -74,11 +40,11 @@ public class Terminal {
     public private(set) var standardScreen: UnsafeMutablePointer<WINDOW>!
     
     /// Terminal is a singleton and should be accessed via Terminal.shared
-    init(mode: Mode = .raw, echoing: Bool = false, keypadEnabled: Bool = true) {
+    init(mode: InputMode = .raw, echoing: Bool = false, keypadEnabled: Bool = true) {
         // sets the locale and associated available characters based on the calling program
         setlocale(LC_ALL, "")
         ncurses.initscr()
-
+        
         self.standardScreen = stdscr
         try? self.set(mode: mode)
         self.set(echoing: echoing)
@@ -86,11 +52,12 @@ public class Terminal {
     }
     
     deinit {
-        // release
+        // release memory and return terminal to normal mode
+        endwin()
     }
     
     /// Sets the input mode of the terminal.
-    public func set(mode: Mode) throws {
+    public func set(mode: InputMode) throws {
         switch mode {
         case .raw:
             ncurses.raw()
@@ -134,10 +101,12 @@ public class Terminal {
     ///int scrl(int n);
     
     //int move(int y, int x);
+    
+    //Refresh
+    public func refreshScreen() {
+        refresh()
+    }
 
-   
-    
-    
 }
 
 //terminal attributes
@@ -166,5 +135,19 @@ extension Terminal {
     public func getKey() -> Int32 {
         return getch()
     }
+}
+
+//Output
+extension Terminal {
+    ///Prints a single character to the screen and advances the cursor postion
+    public func print(char: UTF32Char) {
+        addch(char)
+    }
+    
+    public func print(string: String) {
+        var cString = string.utf8CString
+        addstr(&cString[0])
+    }
+    
 }
 

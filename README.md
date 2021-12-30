@@ -21,3 +21,8 @@ This still leads to a downstream problem of subsequent packages/ executables  ha
 // related post https://github.com/ardagnir/athame/issues/53
     __sighandler_t (on Linux) is not available on MacOS.
     A compiler directive was added in Curses.swift changing to the type alias to sig_t
+
+### subwindows
+Subwindows (methods such as subwin, derwin, mvderwin, wsyncup,  wsyncdown,
+    wcursyncup,  syncok) are reported to be unstable per the man pages and as such are not implemented.  Additionally, they add another level of complexity for the user beyond the current scope of the project.
+    

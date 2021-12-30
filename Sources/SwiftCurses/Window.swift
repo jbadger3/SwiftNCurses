@@ -26,7 +26,7 @@ public class Window {
         let maxY = getmaxx(windowP)
         return Size(width: maxX - location.x, height: maxY - location.y)
     }
-    public var subWindows: [Window]?
+    
     
     //WINDOW *newwin(int nlines, int ncols, int begin_y, int begin_x);
     init?(nLines: Int32, nColumns: Int32, location: Location) {
@@ -39,10 +39,7 @@ public class Window {
 
         
     }
-    private init(subWindowP: UnsafeMutablePointer<WINDOW>) {
-        self.windowP = subWindowP
-        self.cursor = Cursor(window:subWindowP)
-    }
+
     deinit {
         delwin(windowP)
     }
@@ -55,54 +52,12 @@ public class Window {
         mvwin(windowP, location.y, location.x)
     }
     
-    
-    /* from man curs_window
-    // The subwindow functions (subwin, derwin, mvderwin, wsyncup,  wsyncdown,
-    wcursyncup,  syncok)  are flaky, incompletely implemented, and not well
-    tested.
-    */
-    
-    ///int mvderwin(WINDOW *win, int par_y, int par_x);
-    public func move(subWindow: Window, toLocation location: (x: Int32, y: Int32)) throws  { 
-        guard let subWindows = subWindows,
-              subWindows.contains(where: {$0.id==subWindow.id})
-        else {
-            return
-        }
-        mvderwin(subWindow.windowP, location.y, location.x)
- 
+    /// Refreshes the observed output on standard screen
+    public func refresh() {
+        wrefresh(windowP)
     }
     
-    ///    WINDOW *subwin(WINDOW *orig, int nlines, int ncols,
-    ///    int begin_y, int begin_x);
-    ///    WINDOW *derwin(WINDOW *orig, int nlines, int ncols,int begin_y, int begin_x);
-    ///
-    public func newSubwindow(nLines: Int32, nColumns: Int32, location: (x: Int32, y: Int32), relativeToScreen: Bool = true) -> Window? {
-        var subWindowP: UnsafeMutablePointer<WINDOW>? = nil
-        if relativeToScreen {
-            subWindowP = subwin(windowP, nLines, nColumns, location.y, location.x)
-        } else {
-            subWindowP = derwin(windowP, nLines, nColumns, location.y, location.x)
-        }
-        guard let subWindowP = subWindowP else {
-            return nil
-        }
-        let subWindow = Window(subWindowP: subWindowP)
-        if var subWindows = subWindows {
-            subWindows.append(subWindow)
-        } else {
-            subWindows = [subWindow]
-        }
-        return subWindow
-    }
     
-    /*functions
-    
-    void wsyncup(WINDOW *win);
-    int syncok(WINDOW *win, bool bf);
-    void wcursyncup(WINDOW *win);
-    void wsyncdown(WINDOW *win);
-     */
 }
 
 //scrolling extensions
