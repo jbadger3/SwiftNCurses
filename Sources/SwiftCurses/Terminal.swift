@@ -144,7 +144,10 @@ extension Terminal {
         addch(char)
     }
     
-    public func print(_ string: String, location: Location? = nil) {
+    public func print(_ string: String, location: Location? = nil, attributes: Attributes? = nil) {
+        if let attributes = attributes {
+            attron(Int32(attributes.rawValue))
+        }
         if let location = location {
             mvaddstr(location.y, location.x, string)
         } else {
