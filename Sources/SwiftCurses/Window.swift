@@ -99,4 +99,35 @@ extension Window {
     }
 }
 
+//text attribute extensions
+extension Window {
+    public var attributes: Attributes {
+        var colorPair : CShort = 0
+        var attrT = attr_t()
+        wattr_get(windowP, &attrT, &colorPair, nil)
+        return Attributes(rawValue: attrT)
+    }
+    
+    ///Turns on specified text attributes for the Window output
+    public func turnOnAttributes(_ attributes: Attributes) {
+        wattron(windowP, Int32(attributes.rawValue))
+    }
+    
+    ///Turns off specified text attributes for the Window output
+    public func turnOffAttributes(_ attributes: Attributes) {
+        wattroff(windowP, Int32(attributes.rawValue))
+    }
+    
+    ///Sets the text attributes for the Window output
+    public func setAttributes(_ attributes: Attributes) {
+        wattrset(windowP, Int32(attributes.rawValue))
+    }
+    
+    ///Sets the text attributes for the Window to stdout
+    public func setAttributesToStandOut() {
+        wstandout(windowP)
+    }
+    
+}
+
 

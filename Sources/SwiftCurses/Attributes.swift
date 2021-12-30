@@ -11,7 +11,7 @@ public struct Attributes: OptionSet {
     public var rawValue: UInt32
     
     //#define A_NORMAL    (1U - 1U)
-    public static let normal = Attributes(rawValue: 0)
+    public static let normal = Attributes([])
     //#define A_STANDOUT    NCURSES_BITS(1U,8)
     public static let standOut = Attributes(rawValue: 1 << (8 + 8))
     //#define A_UNDERLINE    NCURSES_BITS(1U,9)
@@ -34,8 +34,6 @@ public struct Attributes: OptionSet {
     //need to check this
     //static let charText = Attributes(rawValue: 1 << 8 - 1)
     
-    //#define A_ITALIC    NCURSES_BITS(1U,23)
-    public static let italic = Attributes(rawValue: 1 << (8 + 23))
     /*
                    A_NORMAL        Normal display (no highlight)
                    A_STANDOUT      Best highlighting mode of the terminal.

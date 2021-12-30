@@ -6,6 +6,6 @@ final class SwiftCursesTests: XCTestCase {
         // This is an example of a functional test case.
         // Use XCTAssert and related functions to verify your tests produce the correct
         // results.
-        //XCTAssertEqual(SwiftCurses().text, "Hello, World!")
+        //sXCTAssertEqual(SwiftCurses().text, "Hello, World!")
     }
 }

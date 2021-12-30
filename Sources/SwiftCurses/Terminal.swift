@@ -11,7 +11,6 @@ import ncurses
  */
 public class Terminal {
     
-
     public static var shared = Terminal()
     
     public var lines: Int {
@@ -29,7 +28,7 @@ public class Terminal {
         }
     }
     
-
+    public private(set) var standardScreen: UnsafeMutablePointer<WINDOW>!
     
     public private(set) var currentMode: InputMode = .raw
     
@@ -37,7 +36,21 @@ public class Terminal {
     
     public private(set) var keypadEnabled: Bool = true
     
-    public private(set) var standardScreen: UnsafeMutablePointer<WINDOW>!
+    public var hasColors: Bool {
+        return has_colors()
+    }
+    public var canChangeColors: Bool {
+        return can_change_color()
+    }
+    
+    public var maxColors: Int {
+        
+        return Int(COLORS)
+    }
+    
+    public private(set) var colorsEnabled: Bool = false
+    
+
     
     /// Terminal is a singleton and should be accessed via Terminal.shared
     init(mode: InputMode = .raw, echoing: Bool = false, keypadEnabled: Bool = true) {
@@ -49,7 +62,12 @@ public class Terminal {
         try? self.set(mode: mode)
         self.set(echoing: echoing)
         self.set(keypadEnabled: keypadEnabled)
+        if hasColors {
+            start_color()
+            colorsEnabled = true
+        }
     }
+    
     
     deinit {
         // release memory and return terminal to normal mode
@@ -130,10 +148,40 @@ extension Terminal {
      */
 }
 
-//Get characters
+//Input
 extension Terminal {
     public func getKey() -> Int32 {
         return getch()
+    }
+}
+
+//Output attributes
+extension Terminal {
+    public var attributes: Attributes {
+        var colorPair : CShort = 0
+        var attrT = attr_t()
+        attr_get(&attrT, &colorPair, nil)
+        return Attributes(rawValue: attrT)
+    }
+    
+    ///Turns on specified text attributes for the Terminal output
+    public func turnOnAttributes(_ attributes: Attributes) {
+        attron(Int32(attributes.rawValue))
+    }
+    
+    ///Turns off specified text attributes for the Terminal output
+    public func turnOffAttributes(_ attributes: Attributes) {
+        attroff(Int32(attributes.rawValue))
+    }
+    
+    ///Sets the text attributes for the Terminal output
+    public func setAttributes(_ attributes: Attributes) {
+        attrset(Int32(attributes.rawValue))
+    }
+    
+    ///Sets the text attributes for the Terminal to stdout
+    public func setAttributesToStandOut() {
+        standout()
     }
 }
 
@@ -146,14 +194,16 @@ extension Terminal {
     
     public func print(_ string: String, location: Location? = nil, attributes: Attributes? = nil) {
         if let attributes = attributes {
-            attron(Int32(attributes.rawValue))
+            turnOnAttributes(attributes)
         }
         if let location = location {
             mvaddstr(location.y, location.x, string)
         } else {
             addstr(string)
         }
-        
+        if let attributes = attributes {
+            turnOffAttributes(attributes)
+        }
     }
     
 }
