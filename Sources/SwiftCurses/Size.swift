@@ -8,6 +8,10 @@
 import Foundation
 
 public struct Size {
-    let width: Int32
-    let height: Int32
+    public let width: Int32
+    public let height: Int32
+    public init(width: Int32, height: Int32) {
+        self.width = width
+        self.height = height
+    }
 }
