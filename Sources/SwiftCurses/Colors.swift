@@ -24,7 +24,7 @@ public class Colors {
         return (r: r, g: g, b: b)
     }
     
-    public func setColor(index: Int16, r: Int16, g: Int16, b: Int16) {
+    public static func setColor(index: Int16, r: Int16, g: Int16, b: Int16) {
         init_color(index, r, g, b)
     }
     
