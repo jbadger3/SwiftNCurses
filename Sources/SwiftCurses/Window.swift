@@ -126,6 +126,7 @@ extension Window {
     ///Sets the text attributes for the Window to stdout
     public func setAttributesToStandOut() {
         wstandout(windowP)
+        
     }
     
 }

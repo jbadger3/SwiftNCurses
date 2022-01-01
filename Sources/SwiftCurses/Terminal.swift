@@ -194,9 +194,12 @@ extension Terminal {
         addch(char)
     }
     
-    public func print(_ string: String, location: Location? = nil, attributes: Attributes? = nil) {
+    public func print(_ string: String, location: Location? = nil, attributes: Attributes? = nil, color: ColorPair? = nil) {
         if let attributes = attributes {
             turnOnAttributes(attributes)
+        }
+        if let color = color {
+            attron(color.index)
         }
         if let location = location {
             mvaddstr(location.y, location.x, string)
@@ -205,6 +208,9 @@ extension Terminal {
         }
         if let attributes = attributes {
             turnOffAttributes(attributes)
+        }
+        if let color = color {
+            attroff(color.index)
         }
     }
     
