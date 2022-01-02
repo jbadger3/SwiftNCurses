@@ -46,10 +46,6 @@ public enum EightColorPaletteColor: Int16, CaseIterable {
     case magenta
     case cyan
     case white
-    
-    
 }
 
-protocol ColorPalette {
-    
-}
+
