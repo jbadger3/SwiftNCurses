@@ -259,7 +259,7 @@ public enum XTermColor: Int16, CaseIterable {
     case Grey89
     case Grey93
 
-    func indexAndRGBValues() -> (index: Int16, r: Int16, g: Int16, b: Int16) {
+    public func indexAndRGBValues() -> (index: Int16, r: Int16, g: Int16, b: Int16) {
         switch self {
         case .Black:
             return (index:0, r:0, g:0, b:0)
