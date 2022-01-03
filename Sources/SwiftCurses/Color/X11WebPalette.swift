@@ -1,7 +1,7 @@
 import Foundation
 import ncurses
 
-public enum X11WebColor: Int16, CaseIterable {
+public enum X11WebPalette: Int16, CaseIterable, ColorPalette {
     case MediumVioletRed
     case DeepPink
     case PaleVioletRed
@@ -142,6 +142,10 @@ public enum X11WebColor: Int16, CaseIterable {
     case Silver
     case LightGray
     case Gainsboro
+    
+    public func allValues() -> [X11WebPalette] {
+        return X11WebPalette.allCases
+    }
 
     public func indexAndRGBValues() -> (index: Int16, r: Int16, g: Int16, b: Int16) {
         switch self {

@@ -1,7 +1,7 @@
 import Foundation
 import ncurses
 
-public enum XTermColor: Int16, CaseIterable {
+public enum XTermPalette: Int16, CaseIterable, ColorPalette {
     case Black
     case Maroon
     case Green5
@@ -258,6 +258,10 @@ public enum XTermColor: Int16, CaseIterable {
     case Grey85
     case Grey89
     case Grey93
+    
+    public func allValues() -> [XTermPalette] {
+        return XTermPalette.allCases
+    }
 
     public func indexAndRGBValues() -> (index: Int16, r: Int16, g: Int16, b: Int16) {
         switch self {

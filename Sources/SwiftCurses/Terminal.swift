@@ -9,9 +9,9 @@ import ncurses
  TODO
  
  */
-public class Terminal {
-    
-    public static var shared = Terminal()
+public class Terminal<Palette: ColorPalette> {
+    //private static var initialized: Bool = false
+    //public static var shared = Terminal()
     
     public var lines: Int {
         get {
@@ -45,17 +45,16 @@ public class Terminal {
         return can_change_color()
     }
     
-    public var maxColors: Int {
-        
-        return Int(COLORS)
-    }
+    public private(set) var colors: Colors<Palette>? = nil
+    
+    
     
     public private(set) var colorsEnabled: Bool = false
     
 
     
-    /// Terminal is a singleton and should be accessed via Terminal.shared
-    init(mode: InputMode = .raw, echoing: Bool = false, keypadEnabled: Bool = true) {
+    ///
+    public init(mode: InputMode = .raw, echoing: Bool = false, keypadEnabled: Bool = true, colorPalette: Palette = X11WebPalette.self as! Palette) {
         // sets the locale and associated available characters based on the calling program
         setlocale(LC_ALL, "")
         ncurses.initscr()
@@ -64,9 +63,10 @@ public class Terminal {
         try? self.set(mode: mode)
         self.set(echoing: echoing)
         self.set(keypadEnabled: keypadEnabled)
-        if hasColors {
+        if canChangeColors {
             start_color()
             colorsEnabled = true
+            colors = Colors(palette: colorPalette)
         }
     }
     
@@ -214,5 +214,11 @@ extension Terminal {
         }
     }
     
+    public func print(_ string: String, location: Location? = nil, attributes: Attributes? = nil, usingColors: Palette) {
+        
+    }
+    
 }
+
+
 

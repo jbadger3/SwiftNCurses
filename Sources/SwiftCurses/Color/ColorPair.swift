@@ -7,6 +7,7 @@
 
 import Foundation
 import ncurses
+
 public struct ColorPair {
     public var name: String
     public var index: Int32
