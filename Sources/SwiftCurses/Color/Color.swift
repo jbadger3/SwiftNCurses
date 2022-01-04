@@ -8,8 +8,8 @@
 import Foundation
 
 public struct Color {
-    let index: Int16
-    let r: Int16
-    let g: Int16
-    let b: Int16
+    public let index: Int16
+    public let r: Int16
+    public let g: Int16
+    public let b: Int16
 }
