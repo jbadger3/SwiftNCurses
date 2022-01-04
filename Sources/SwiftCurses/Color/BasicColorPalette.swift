@@ -9,15 +9,14 @@ import Foundation
 
 public struct BasicColorPalette: ColorPalette {
     let Black = Color(index: 0, r: 0, g: 0, b: 0)
-    //case Red
-    //case Green
-    //case Yellow
-    //case Blue
-    //case Magenta
-    //case Cyan
-    //case White
+    let Red = Color(index: 1, r: 680, g: 0, b: 0)
+    let Green = Color(index: 2, r: 0, g: 680, b: 0)
+    let Yellow = Color(index: 3, r: 680, g: 680, b: 0)
+    let Blue = Color(index: 4, r: 0, g: 0, b: 680)
+    let Magenta = Color(index: 5, r: 680, g: 0, b: 680)
+    let Cyan = Color(index: 6, r: 0, g: 680, b: 680)
+    let White = Color(index: 7, r: 680, g: 680, b: 680)
     
-    //This should never actually be called...initialized by ncurses library
     public init() {}
 
     public func allColors() -> [Color]  {
