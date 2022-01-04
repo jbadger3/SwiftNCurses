@@ -1,7 +1,7 @@
 import Foundation
 import ncurses
 
-public struct X11WebPalette{
+public struct X11WebPalette: ColorPalette{
     public let MediumVioletRed = Color(index: 0, r: 780, g: 82, b: 522)
     public let DeepPink = Color(index: 1, r: 1000, g: 78, b: 576)
     public let PaleVioletRed = Color(index: 2, r: 859, g: 439, b: 576)
@@ -154,5 +154,9 @@ public struct X11WebPalette{
             }
         }
         return colors
+    }
+    
+    public func defaultPair() -> (foreground: Color, background: Color) {
+        return (foreground: X11WebPalette().White, background: X11WebPalette().Black)
     }
 }
