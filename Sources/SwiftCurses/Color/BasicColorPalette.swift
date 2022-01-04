@@ -7,22 +7,27 @@
 
 import Foundation
 
-public enum BasicColorPalette: Int16, CaseIterable {
-    case Black
-    case Red
-    case Green
-    case Yellow
-    case Blue
-    case Magenta
-    case Cyan
-    case White
+public struct BasicColorPalette {
+    let Black = Color(index: 0, r: 0, g: 0, b: 0)
+    //case Red
+    //case Green
+    //case Yellow
+    //case Blue
+    //case Magenta
+    //case Cyan
+    //case White
     
     //This should never actually be called...initialized by ncurses library
-    public func indexAndRGBValues() -> (index: Int16, r: Int16, g: Int16, b: Int16) {
-        return (0, 0,0,0)
-    }
-    
-    public func allColors() -> [BasicColorPalette] {
-        return BasicColorPalette.allCases
+    public init() {}
+
+    public func allColors() -> [Color]  {
+        var colors: [Color] = []
+        let mirror = Mirror(reflecting: self)
+        for child in mirror.children {
+            if let color = child.value as? Color {
+                colors.append(color)
+            }
+        }
+        return colors
     }
 }
