@@ -194,6 +194,10 @@ extension Terminal {
         addch(char)
     }
     
+    public func print(_ string: String) {
+        addstr(string)
+    }
+    
     public func print(_ string: String, location: Location? = nil, attributes: Attributes? = nil, colorPair: ColorPair? = nil) {
         if let attributes = attributes {
             turnOnAttributes(attributes)
