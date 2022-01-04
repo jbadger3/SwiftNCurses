@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct BasicColorPalette {
+public struct BasicColorPalette: ColorPalette {
     let Black = Color(index: 0, r: 0, g: 0, b: 0)
     //case Red
     //case Green
