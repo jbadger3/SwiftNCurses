@@ -9,7 +9,7 @@ import ncurses
  TODO
  
  */
-public class Terminal<Palette: ColorPalette> {
+public class Terminal {
     //private static var initialized: Bool = false
     //public static var shared = Terminal()
     
@@ -45,7 +45,7 @@ public class Terminal<Palette: ColorPalette> {
         return can_change_color()
     }
     
-    public private(set) var colors: Colors<Palette>? = nil
+    public private(set) var colors: Colors? = nil
     
     
     
@@ -54,7 +54,7 @@ public class Terminal<Palette: ColorPalette> {
 
     
     ///
-    public init(mode: InputMode = .raw, echoing: Bool = false, keypadEnabled: Bool = true, colorPalette: Palette = X11WebPalette.self as! Palette) {
+    public init(mode: InputMode = .raw, echoing: Bool = false, keypadEnabled: Bool = true, colorPalette: ColorPalette = X11WebPalette.self as! ColorPalette ) {
         // sets the locale and associated available characters based on the calling program
         setlocale(LC_ALL, "")
         ncurses.initscr()
@@ -214,9 +214,9 @@ extension Terminal {
         }
     }
     
-    public func print(_ string: String, location: Location? = nil, attributes: Attributes? = nil, usingColors: Palette) {
-        
-    }
+ 
+    
+
     
 }
 

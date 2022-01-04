@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum BasicColorPalette: Int16, CaseIterable, ColorPalette {
+public enum BasicColorPalette: Int16, CaseIterable {
     case Black
     case Red
     case Green
@@ -22,7 +22,7 @@ public enum BasicColorPalette: Int16, CaseIterable, ColorPalette {
         return (0, 0,0,0)
     }
     
-    public func allValues() -> [BasicColorPalette] {
+    public func allColors() -> [BasicColorPalette] {
         return BasicColorPalette.allCases
     }
 }

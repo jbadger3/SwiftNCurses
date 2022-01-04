@@ -8,8 +8,8 @@
 import Foundation
 import ncurses
 
-public class Colors<Palette: ColorPalette> {
-    public let palette: Palette
+public class Colors {
+    public let palette: ColorPalette
     
     public static var maxColors: Int {
         return Int(COLORS)
@@ -18,7 +18,7 @@ public class Colors<Palette: ColorPalette> {
         return Int(COLOR_PAIRS)
     }
     
-    internal init(palette: Palette = X11WebPalette.self as! Palette) {
+    internal init(palette: ColorPalette) {
         self.palette = palette
         if !(palette is BasicColorPalette) {
             initializeColors()
@@ -50,9 +50,8 @@ public class Colors<Palette: ColorPalette> {
     }
     
     private func initializeColors() {
-        for color in palette.allValues() {
-            let colorData = color.indexAndRGBValues()
-            init_color(colorData.index, colorData.r, colorData.g, colorData.b)
+        for color in palette.allColors() {
+            init_color(color.index, color.r, color.g, color.b)
         }
     }
     

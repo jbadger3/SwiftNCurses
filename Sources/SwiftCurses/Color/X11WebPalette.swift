@@ -1,7 +1,7 @@
 import Foundation
 import ncurses
 
-public enum X11WebPalette: Int16, CaseIterable, ColorPalette {
+public enum X11WebPalette: Int16, CaseIterable {
     case MediumVioletRed
     case DeepPink
     case PaleVioletRed
