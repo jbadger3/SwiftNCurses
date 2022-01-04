@@ -199,6 +199,7 @@ extension Terminal {
             turnOnAttributes(attributes)
         }
         if let color = color {
+            attron(COLOR_PAIR(0))
             //attron(COLOR_PAIR(color.index))
         }
         if let location = location {

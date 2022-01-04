@@ -58,6 +58,7 @@ public class Colors {
     private func initializeDefaultColorPair() {
         let pair = palette.defaultPair()
         init_pair(0, pair.foreground.index, pair.background.index)
+        assume_default_colors(Int32(pair.foreground.index), Int32(pair.background.index))
     }
     
     
