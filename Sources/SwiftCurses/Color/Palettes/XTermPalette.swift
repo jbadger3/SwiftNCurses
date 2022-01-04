@@ -271,4 +271,7 @@ public struct XTermPalette: ColorPalette {
         }
         return colors
     }
+    public func defaultPair() -> (foreground: Color, background: Color) {
+        return (foreground: XTermPalette().White, background: XTermPalette().Black)
+    }
 }

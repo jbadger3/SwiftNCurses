@@ -29,4 +29,7 @@ public struct BasicColorPalette: ColorPalette {
         }
         return colors
     }
+    public func defaultPair() -> (foreground: Color, background: Color) {
+        return (foreground: BasicColorPalette().White, background: BasicColorPalette().Black)
+    }
 }

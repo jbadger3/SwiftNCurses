@@ -199,7 +199,7 @@ extension Terminal {
             turnOnAttributes(attributes)
         }
         if let color = color {
-            attron(COLOR_PAIR(color.index))
+            //attron(COLOR_PAIR(color.index))
         }
         if let location = location {
             mvaddstr(location.y, location.x, string)
@@ -210,7 +210,7 @@ extension Terminal {
             turnOffAttributes(attributes)
         }
         if let color = color {
-            attroff(COLOR_PAIR(color.index))
+            //attroff(COLOR_PAIR(color.index))
         }
     }
     

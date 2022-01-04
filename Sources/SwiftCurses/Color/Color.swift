@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct Color {
+public struct Color: Equatable {
     public let index: Int16
     public let r: Int16
     public let g: Int16

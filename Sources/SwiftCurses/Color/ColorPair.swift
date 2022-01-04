@@ -8,11 +8,20 @@
 import Foundation
 import ncurses
 
-public struct ColorPair {
-    public var name: String
-    public var index: Int32
-    public init(name: String, index: Int32) {
+public struct ColorPair: Equatable {
+
+    
+    public let foreground: Color
+    public let background: Color
+    public let name: String?
+    public init(foreground: Color, background: Color, name: String?) {
+        self.foreground = foreground
+        self.background = background
         self.name = name
-        self.index = index
+    }
+    
+    public static func == (lhs: ColorPair, rhs: ColorPair) -> Bool {
+        lhs.foreground == rhs.foreground &&
+        lhs.background == rhs.background
     }
 }
