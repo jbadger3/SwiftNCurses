@@ -29,9 +29,9 @@ public class Colors {
     }
     
     private func initializeDefaultColorPair() {
-        let pair = palette.defaultPair()
-        init_pair(0, pair.foreground.index, pair.background.index)
-        assume_default_colors(Int32(pair.foreground.index), Int32(pair.background.index))
+        let colorPair = palette.defaultPair()
+        setColorPair(colorPair: colorPair)
+        assume_default_colors(Int32(colorPair.foreground.index), Int32(colorPair.background.index))
     }
     
     private func setColorPair(colorPair: ColorPair) {
@@ -40,6 +40,16 @@ public class Colors {
             init_pair(Int16(colorPairs.count), colorPair.foreground.index, colorPair.background.index)
         }
     }
+    
+    internal func indexFor(colorPair: ColorPair) -> Int32 {
+        if let index = colorPairs.firstIndex(of: colorPair) {
+            return Int32(index)
+        } else {
+            setColorPair(colorPair: colorPair)
+            return Int32(colorPairs.count)
+        }
+    }
+    
     
     
     

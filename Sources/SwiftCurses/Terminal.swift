@@ -194,13 +194,13 @@ extension Terminal {
         addch(char)
     }
     
-    public func print(_ string: String, location: Location? = nil, attributes: Attributes? = nil, color: ColorPair? = nil) {
+    public func print(_ string: String, location: Location? = nil, attributes: Attributes? = nil, colorPair: ColorPair? = nil) {
         if let attributes = attributes {
             turnOnAttributes(attributes)
         }
-        if let color = color {
-            attron(COLOR_PAIR(0))
-            //attron(COLOR_PAIR(color.index))
+        if let colorPair = colorPair,
+            let index = colors?.indexFor(colorPair: colorPair) {
+            attron(COLOR_PAIR(index))
         }
         if let location = location {
             mvaddstr(location.y, location.x, string)
@@ -210,8 +210,35 @@ extension Terminal {
         if let attributes = attributes {
             turnOffAttributes(attributes)
         }
-        if let color = color {
-            //attroff(COLOR_PAIR(color.index))
+        if let colorPair = colorPair,
+           let index = colors?.indexFor(colorPair: colorPair) {
+            attroff(COLOR_PAIR(index))
+        }
+    }
+    
+    public func print(_ string: String, location: Location? = nil, attributes: Attributes? = nil, color: Color? = nil) {
+        if let attributes = attributes {
+            turnOnAttributes(attributes)
+        }
+        if let colors = colors,
+           let color = color {
+            let colorPair = ColorPair(foreground: color, background: colors.palette.defaultPair().background, name: "")
+            let index = colors.indexFor(colorPair: colorPair)
+            attron(COLOR_PAIR(index))
+        }
+        if let location = location {
+            mvaddstr(location.y, location.x, string)
+        } else {
+            addstr(string)
+        }
+        if let attributes = attributes {
+            turnOffAttributes(attributes)
+        }
+        if let colors = colors,
+           let color = color {
+            let colorPair = ColorPair(foreground: color, background: colors.palette.defaultPair().background, name: "")
+            let index = colors.indexFor(colorPair: colorPair)
+            attroff(COLOR_PAIR(index))
         }
     }
     
