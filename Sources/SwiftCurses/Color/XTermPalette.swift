@@ -259,6 +259,8 @@ public struct XTermPalette: ColorPalette {
     let Grey89 = Color(index: 254, r: 894, g: 894, b: 894)
     let Grey93 = Color(index: 255, r: 933, g: 933, b: 933)
 
+    public init() {}
+
     public func allColors() -> [Color]  {
         var colors: [Color] = []
         let mirror = Mirror(reflecting: self)
