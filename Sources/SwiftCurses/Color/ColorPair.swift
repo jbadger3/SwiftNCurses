@@ -9,12 +9,10 @@ import Foundation
 import ncurses
 
 public struct ColorPair: Equatable {
-
-    
     public let foreground: Color
     public let background: Color
     public let name: String?
-    public init(foreground: Color, background: Color, name: String?) {
+    public init(foreground: Color, background: Color, name: String? = nil) {
         self.foreground = foreground
         self.background = background
         self.name = name

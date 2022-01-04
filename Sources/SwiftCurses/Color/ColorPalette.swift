@@ -9,5 +9,5 @@ import Foundation
 
 public protocol ColorPalette {
     func allColors() -> [Color]
-    func defaultPair() -> (foreground: Color, background: Color)
+    func defaultPair() -> ColorPair
 }

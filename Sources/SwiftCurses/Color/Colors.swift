@@ -1,7 +1,4 @@
 //
-//  File.swift
-//  
-//
 //  Created by Jonathan Badger on 12/30/21.
 //
 
@@ -25,6 +22,28 @@ public class Colors {
         initializeDefaultColorPair()
     }
     
+    private func initializeColors() {
+        for color in palette.allColors() {
+            init_color(color.index, color.r, color.g, color.b)
+        }
+    }
+    
+    private func initializeDefaultColorPair() {
+        let pair = palette.defaultPair()
+        init_pair(0, pair.foreground.index, pair.background.index)
+        assume_default_colors(Int32(pair.foreground.index), Int32(pair.background.index))
+    }
+    
+    private func setColorPair(colorPair: ColorPair) {
+        if !colorPairs.contains(colorPair) && colorPairs.count < Colors.maxColorPairs {
+            colorPairs.append(colorPair)
+            init_pair(Int16(colorPairs.count), colorPair.foreground.index, colorPair.background.index)
+        }
+    }
+    
+    
+    
+    /*
     public static func getColor(atIndex index: Int16) -> (r: Int16, g: Int16, b: Int16) {
         var r: Int16 = 0
         var g: Int16 = 0
@@ -48,18 +67,9 @@ public class Colors {
         pair_content(0, &foregroundColor, &backgroundColor)
         return (fgIndex: foregroundColor, bgIndex: backgroundColor)
     }
+     */
     
-    private func initializeColors() {
-        for color in palette.allColors() {
-            init_color(color.index, color.r, color.g, color.b)
-        }
-    }
-    
-    private func initializeDefaultColorPair() {
-        let pair = palette.defaultPair()
-        init_pair(0, pair.foreground.index, pair.background.index)
-        assume_default_colors(Int32(pair.foreground.index), Int32(pair.background.index))
-    }
+
     
     
     
