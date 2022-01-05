@@ -154,9 +154,7 @@ extension Terminal {
 //Input
 extension Terminal {
     public func getKey() -> Int32 {
-        var char: Int32 = 0
-        return get_wch(&char)
-        
+        return getch()
     }
     
 
@@ -196,6 +194,8 @@ extension Terminal {
 extension Terminal {
     ///Prints a single character to the screen and advances the cursor postion
     public func print(char: UTF32Char) {
+        
+        
         addch(char)
     }
     
