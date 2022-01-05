@@ -5,6 +5,7 @@
 import Foundation
 import ncurses
 
+
 /**
  TODO
  
@@ -153,8 +154,12 @@ extension Terminal {
 //Input
 extension Terminal {
     public func getKey() -> Int32 {
-        return getch()
+        var char: Int32 = 0
+        return get_wch(&char)
+        
     }
+    
+
 }
 
 //Output attributes
