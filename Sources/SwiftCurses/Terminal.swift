@@ -155,8 +155,8 @@ extension Terminal {
 extension Terminal {
     public func getKey() -> Int32 {
         var wintT = wint_t()
-        
-        return get_wch(&wintT)
+        get_wch(&wintT)
+        return wintT
     }
     
 
