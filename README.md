@@ -28,3 +28,8 @@ Subwindows (methods such as subwin, derwin, mvderwin, wsyncup,  wsyncdown,
     
 #### color table
 https://www.ditig.com/256-colors-cheat-sheet
+
+
+#### wide character support
+It seems weird but the non-wide functions seem to be handling wide characters just fine.
+unknown if //#define _XOPEN_SOURCE_EXTENDED  is needed in the module include as things seem to break with it
