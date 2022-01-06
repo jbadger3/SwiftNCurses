@@ -195,10 +195,11 @@ extension Terminal {
 //Output
 extension Terminal {
     ///Prints a single character to the screen and advances the cursor postion
-    public func print(char: UTF32Char) {
-        
-        
-        addch(char)
+    public func print(char: Int32) {
+        var ccharT = cchar_t()
+        ccharT.chars.0 = char
+        add_wch(&ccharT)
+        //addch(char)
     }
     
     public func print(_ string: String) {
