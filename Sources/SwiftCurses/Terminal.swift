@@ -193,6 +193,19 @@ extension Terminal {
     public func setAttributesToStandOut() {
         standout()
     }
+    
+    public func deleteCurrentCharacter() {
+        delch()
+    }
+    
+    public func deleteLastCharacter() {
+        let location = Location(x: cursor.location.x - 1, y: cursor.location.y)
+        deletCharacter(atLocation: location)
+    }
+    
+    public func deletCharacter(atLocation location: Location) {
+        mvdelch(location.y, location.x)
+    }
 }
 
 //Output
