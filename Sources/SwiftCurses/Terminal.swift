@@ -159,6 +159,12 @@ extension Terminal {
         return wintT
     }
     
+    public func getString() -> String {
+        var cChar = CChar()
+        getstr(&cChar)
+        return String(cString: &cChar)
+    }
+    
 
 }
 
@@ -201,6 +207,7 @@ extension Terminal {
         add_wch(&ccharT)
         //addch(char)
     }
+    
     
     public func print(_ string: String) {
         addstr(string)
