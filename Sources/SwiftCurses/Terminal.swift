@@ -5,7 +5,6 @@
 import Foundation
 import ncurses
 
-
 /**
  TODO
  
@@ -154,9 +153,7 @@ extension Terminal {
 //Input
 extension Terminal {
     public func getKey() -> Int32 {
-        var wintT = wint_t()
-        get_wch(&wintT)
-        return wintT
+        return getch()
     }
     
     public func getString() -> String {
@@ -202,10 +199,7 @@ extension Terminal {
 extension Terminal {
     ///Prints a single character to the screen and advances the cursor postion
     public func print(char: Int32) {
-        var ccharT = cchar_t()
-        ccharT.chars.0 = char
-        add_wch(&ccharT)
-        //addch(char)
+        addch(chtype(char))
     }
     
     
