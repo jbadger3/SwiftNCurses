@@ -159,6 +159,9 @@ extension Terminal {
     public func getWintT() -> Int32 {
         var wintT = wint_t()
         get_wch(&wintT)
+        if wintT == KEY_BACKSPACE {
+            self.print("backspace")
+        }
         return wintT
     }
     
