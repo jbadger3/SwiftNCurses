@@ -152,8 +152,14 @@ extension Terminal {
 
 //Input
 extension Terminal {
-    public func getKey() -> Int32 {
+    public func getChar() -> Int32 {
         return getch()
+    }
+    
+    public func getWintT() -> Int32 {
+        var wintT = wint_t()
+        get_wch(&wintT)
+        return wintT
     }
     
     public func getString() -> String {
