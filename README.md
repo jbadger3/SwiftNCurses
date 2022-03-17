@@ -1,5 +1,5 @@
-# SwiftCurses
-A wrapper around the ncurses library
+# SwiftNCurses
+Swift bindings to the ncurses library
 
 
 ### MacOS Notes
@@ -27,9 +27,22 @@ Subwindows (methods such as subwin, derwin, mvderwin, wsyncup,  wsyncdown,
     wcursyncup,  syncok) are reported to be unstable per the man pages and as such are not implemented.  Additionally, they add another level of complexity for the user beyond the current scope of the project.
     
 #### color table
+* only 256 color pairs are supported as text attributes are OR'd using the older curses API.  see notes in the man pages for curs_attr.
 https://www.ditig.com/256-colors-cheat-sheet
 
 
-#### wide character support
-It seems weird but the non-wide functions seem to be handling wide characters just fine.
-unknown if //#define _XOPEN_SOURCE_EXTENDED  is needed in the module include as things seem to break with it
+#### Wide Character support
+SwiftNCurses supports wide characters, but there are a few caveots and notes for end users.
+* Most emojis and Unicode characters will display without any issues, but be aware that unicode characters composed of multiple code points (grapheme clusters) won't display properly.
+* although SwiftNCurses is linked with the wide curses library (ncursesw), none of the wide character support API is utilized at this time.  The wide character API more complicated and most users are not likely to need the additional support it provides.
+
+
+
+* wikipedia entry on wide characters https://en.wikipedia.org/wiki/Wide_character
+* Some useful notes on getting ncursesw http://dillingers.com/blog/2014/08/10/ncursesw-and-unicode/
+### menu notes 
+
+
+### more sources for using curses on mac
+https://forums.swift.org/t/ncurses-on-linux-with-swift/16913
+

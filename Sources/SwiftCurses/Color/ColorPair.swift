@@ -1,21 +1,32 @@
 //
-//  File.swift
-//  
-//
 //  Created by Jonathan Badger on 12/30/21.
 //
 
 import Foundation
 import ncurses
 
+/**
+ ColorPairs are used in conjuction with other ``Attributes`` such as bold or underline to change the appearce of text in the terminal.
+ 
+ The default ColorPair for most terminals is white (foreground) on black (background).  Colors for each ColorPair should be instantiated from a ColorPalette.
+
+ `example usage`
+ ````
+ import SwiftNCurses
+ let palette = BasicColorPalette()
+ let colorPair = ColorPair(foreground: palette.Green, background: palette.Black)
+ let terminal = Terminal(colorPalette: palette)
+ terminal.print("Hello greeen world", attributes: [.colorPair(colorPair)])
+ let key = terminal.getKey()
+ ````
+ */
 public struct ColorPair: Equatable {
     public let foreground: Color
     public let background: Color
-    public let name: String?
-    public init(foreground: Color, background: Color, name: String? = nil) {
+    
+    public init(foreground: Color, background: Color) {
         self.foreground = foreground
         self.background = background
-        self.name = name
     }
     
     public static func == (lhs: ColorPair, rhs: ColorPair) -> Bool {

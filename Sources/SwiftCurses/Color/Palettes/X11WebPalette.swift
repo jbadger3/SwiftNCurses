@@ -1,6 +1,11 @@
+//  Created by Jonathan Badger on 1/3/22.
+
 import Foundation
 import ncurses
 
+/**
+ A 256 color palette based on [X11 web colors](https://en.wikipedia.org/wiki/Web_colors#X11_color_names).    See the source file used to construct this palette can be found [here](https://www.apt-browse.org/browse/ubuntu/trusty/main/all/x11-common/1:7.7+1ubuntu8/file/etc/X11/rgb.txt).
+ */
 public struct X11WebPalette: ColorPalette {
     public let MediumVioletRed = Color(index: 0, r: 780, g: 82, b: 522)
     public let DeepPink = Color(index: 1, r: 1000, g: 78, b: 576)
@@ -155,7 +160,7 @@ public struct X11WebPalette: ColorPalette {
         }
         return colors
     }
-
+    ///White text on a black background
     public func defaultPair() -> ColorPair {
         return ColorPair(foreground: X11WebPalette().White, background: X11WebPalette().Black)
     }

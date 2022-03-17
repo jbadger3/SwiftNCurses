@@ -6,20 +6,25 @@
 //
 
 import Foundation
+
 import ncurses
+
 
 /**
  Passing all zeros for location and size creates a full screen window
  */
 public class Window {
     private var windowP: UnsafeMutablePointer<WINDOW>!
-    public let id = UUID()
+    private let colors = Colors.shared
+    
     public private(set) var cursor : Cursor
+    public private(set) var keypadEnabled: Bool = true
     
     ///The upper left corner of the window (beginning location)
     public var location: Location {
         return Location(x:getbegx(windowP), y:getbegy(windowP))
     }
+    
     public var size: Size {
         let location = self.location
         let maxX = getmaxx(windowP)
@@ -29,20 +34,31 @@ public class Window {
     
     
     //WINDOW *newwin(int nlines, int ncols, int begin_y, int begin_x);
-    init?(nLines: Int32, nColumns: Int32, location: Location) {
-        if let winP = newwin(nLines, nColumns, location.y, location.x) {
+    public init?(size: Size, location: Location, keypadEnabled: Bool = true) {
+        if let winP = newwin(size.height, size.width, location.y, location.x) {
             self.windowP = winP
             self.cursor = Cursor(window:winP)
+            self.set(keypadEnabled: keypadEnabled)
+            
         } else {
             return nil
-        }
-
-        
+        }        
     }
 
     deinit {
         delwin(windowP)
     }
+    
+    /// Turn extended keypad support on or off
+    public func set(keypadEnabled: Bool) {
+        if keypadEnabled {
+            keypad(windowP, true)
+        } else {
+            keypad(windowP, false)
+        }
+        self.keypadEnabled = keypadEnabled
+    }
+    
     //WINDOW *dupwin(WINDOW *win);
     
     /// Moves the window so its upper left corner is at the specified location
@@ -57,7 +73,52 @@ public class Window {
         wrefresh(windowP)
     }
     
+    public func deleteCurrentCharacter() {
+        wdelch(windowP)
+    }
     
+    public func deleteLastCharacter() {
+        let location = Location(x: cursor.location.x - 1, y: cursor.location.y)
+        deletCharacter(atLocation: location)
+    }
+    
+    public func deletCharacter(atLocation location: Location) {
+        mvwdelch(windowP, location.y, location.x)
+        mvdelch(location.y, location.x)
+    }
+    
+    ///Returns all content in the window as a string.
+    public func allContent() -> String {
+        var contents = ""
+        
+        let cursorLocation = cursor.location
+        for line in 0..<size.height {
+            try? cursor.move(toLocation: Location(x: 0, y: line))
+            var cchar = CChar()
+            winstr(windowP, &cchar)
+            var lineString = String(cString: &cchar).trimmingCharacters(in: .whitespaces)
+            if line < size.height {
+                lineString.append("\n")
+            }
+            contents.append(lineString)
+        }
+        contents = contents.trimmingCharacters(in: .newlines)
+        try? cursor.move(toLocation: cursorLocation)
+        return contents
+    }
+    
+    ///Returns the contents of the current line beginning at the window's current cursor location specified.
+    public func contents(startingAt startingLocation: Location? = nil) -> String {
+        let currentLocation = cursor.location
+        var cchar = CChar()
+        if let startingLocation = startingLocation {
+            mvwinstr(windowP, startingLocation.y, startingLocation.x, &cchar)
+        } else {
+            winstr(windowP, &cchar)
+        }
+        try? cursor.move(toLocation: currentLocation)
+        return String(cString: &cchar).trimmingCharacters(in: .whitespaces)
+    }
 }
 
 //scrolling extensions
@@ -99,13 +160,28 @@ extension Window {
     }
 }
 
+//Input functions
+extension Window {
+    public func getKey() -> Key {
+        let rawValue = wgetch(windowP)
+        return Key(rawValue: rawValue)
+    }
+    
+    public func getString() -> String {
+        var cChar = CChar()
+        wgetstr(windowP, &cChar)
+        return String(cString: &cChar)
+    }
+}
+
 //text attribute extensions
 extension Window {
     public var attributes: Attributes {
-        var colorPair : CShort = 0
+        var colorPairIndex : CShort = 0
         var attrT = attr_t()
-        wattr_get(windowP, &attrT, &colorPair, nil)
-        return Attributes(rawValue: attrT)
+        wattr_get(windowP, &attrT, &colorPairIndex, nil)
+        let colorPair = Colors.shared.colorPairs[Int(colorPairIndex)]
+        return [Attributes(rawValue: attrT), .colorPair(colorPair)]
     }
     
     ///Turns on specified text attributes for the Window output
@@ -124,11 +200,39 @@ extension Window {
     }
     
     ///Sets the text attributes for the Window to stdout
-    public func setAttributesToStandOut() {
+    public func setAttributesToStdOut() {
         wstandout(windowP)
         
     }
+}
+
+//Output
+extension Window {
+    ///Prints a single character to the screen and advances the cursor postion
+    public func print(key: Key, ignoreControlKeys: Bool = true) {
+        guard key.rawValue > 0 else { return }
+        if ignoreControlKeys {
+            if key.isPrintableControlKey || key.type == .characterKey {
+                waddch(windowP, chtype(key.rawValue))
+            }
+        } else {
+            waddch(windowP, chtype(key.rawValue))
+        }
+    }
     
+    public func print(_ string: String, attributes: Attributes? = nil, location: Location? = nil) {
+        let windowAttributes = self.attributes
+        if let attributes = attributes {
+            setAttributes(attributes)
+        }
+        if let location = location {
+            mvwaddstr(windowP, location.y, location.x, string)
+        } else {
+            waddstr(windowP, string)
+        }
+        setAttributes(windowAttributes)
+    }
+
 }
 
 

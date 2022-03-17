@@ -1,4 +1,3 @@
-
 //  Created by Jonathan Badger on 12/27/21.
 //
 
@@ -10,86 +9,74 @@ import ncurses
  
  */
 public class Terminal {
-    //private static var initialized: Bool = false
-    //public static var shared = Terminal()
-    
-    public var lines: Int {
+    ///The number of lines in the terminal
+    public var lines: Int32 {
         get {
-            return Int(LINES)
+            return LINES
         } set {
-            LINES = Int32(newValue)
+            LINES = newValue
         }
     }
-    public var columns: Int {
+    ///The number of columns in the terminal
+    public var columns: Int32 {
         get {
-            return Int(COLS)
+            return COLS
         } set {
-            COLS = Int32(newValue)
+            COLS = newValue
         }
     }
-    
+
     public private(set) var standardScreen: UnsafeMutablePointer<WINDOW>!
-    
+    ///The current input mode for the current program (defaults to raw). See ``InputMode`` for a list of all available modes.
     public private(set) var currentMode: InputMode = .raw
-    
+    ///Indicates whether the current termial echos each keypress back to the terminal (defaults to false)
     public private(set) var echoing: Bool = false
     
     public private(set) var keypadEnabled: Bool = true
-    
+    ///The cursor associated with the terminal
     public let cursor: Cursor
-    
-    public var hasColors: Bool {
-        return has_colors()
-    }
-    public var canChangeColors: Bool {
-        return can_change_color()
-    }
-    
-    public private(set) var colors: Colors? = nil
-    
-    
-    
+    ///Indicates if colored output is enabled.  Colors are enabled during instantiation of the Terminal object if the terminal supports color.
     public private(set) var colorsEnabled: Bool = false
-    
-
-    
+    ///A shared singleton to track colors used by the program
+    public let colors = Colors.shared
     ///
-    public init(mode: InputMode = .raw, echoing: Bool = false, keypadEnabled: Bool = true, colorPalette: ColorPalette = X11WebPalette.self as! ColorPalette ) {
+    public init(mode: InputMode = .raw, echoing: Bool = false, keypadEnabled: Bool = true, colorPalette: ColorPalette = XTermPalette() as ColorPalette) {
         // sets the locale and associated available characters based on the calling program
         setlocale(LC_ALL, "")
-        ncurses.initscr()
+        initscr()
         self.standardScreen = stdscr
         self.cursor = Cursor(window: stdscr)
         try? self.set(mode: mode)
         self.set(echoing: echoing)
         self.set(keypadEnabled: keypadEnabled)
-        if canChangeColors {
+        
+        if colors.canChangeColors {
             start_color()
             colorsEnabled = true
-            colors = Colors(palette: colorPalette)
+            colors.palette = colorPalette
         }
     }
-    
     
     deinit {
         // release memory and return terminal to normal mode
         endwin()
+        
     }
     
     /// Sets the input mode of the terminal.
     public func set(mode: InputMode) throws {
         switch mode {
         case .raw:
-            ncurses.raw()
+            raw()
         case .noraw:
-            ncurses.noraw()
+            noraw()
         case .cbreak:
-            ncurses.cbreak()
+            cbreak()
         case .nocbreak:
-            ncurses.nocbreak()
+            nocbreak()
         case .halfdelay(let timeout):
             if Range(1...255).contains(timeout) {
-                ncurses.halfdelay(Int32(timeout))
+                halfdelay(Int32(timeout))
             } else {
                 //TODO throw error here
             }
@@ -100,9 +87,9 @@ public class Terminal {
     /// Turns echoing on and off
     public func set(echoing: Bool) {
         if echoing {
-            ncurses.echo()
+            echo()
         } else {
-            ncurses.noecho()
+            noecho()
         }
         self.echoing = echoing
     }
@@ -110,9 +97,9 @@ public class Terminal {
     /// Turn extended keypad support on or off
     public func set(keypadEnabled: Bool) {
         if keypadEnabled {
-            ncurses.keypad(self.standardScreen, true)
+            keypad(self.standardScreen, true)
         } else {
-            ncurses.keypad(self.standardScreen, false)
+            keypad(self.standardScreen, false)
         }
         self.keypadEnabled = keypadEnabled
     }
@@ -122,11 +109,64 @@ public class Terminal {
     
     //int move(int y, int x);
     
+    /* call on refresh to terminal seems to cause fatal error
     //Refresh
-    public func refreshScreen() {
+    public func refresh() {
         refresh()
     }
-
+    */
+    
+    public func quit() {
+        // release memory and return terminal to normal mode
+        endwin()
+        exit(0)
+    }
+    
+    public func deleteCurrentCharacter() {
+        delch()
+    }
+    
+    public func deleteLastCharacter() {
+        let location = Location(x: cursor.location.x - 1, y: cursor.location.y)
+        deletCharacter(atLocation: location)
+    }
+    
+    public func deletCharacter(atLocation location: Location) {
+        mvdelch(location.y, location.x)
+    }
+    
+    ///Returns all content in the window as a string.
+    public func allContent() -> String {
+        var contents = ""
+        
+        let cursorLocation = cursor.location
+        for line in 0..<lines {
+            try? cursor.move(toLocation: Location(x: 0, y: line))
+            var cchar = CChar()
+            instr(&cchar)
+            var lineString = String(cString: &cchar).trimmingCharacters(in: .whitespaces)
+            if line < lines {
+                lineString.append("\n")
+            }
+            contents.append(lineString)
+        }
+        contents = contents.trimmingCharacters(in: .newlines)
+        try? cursor.move(toLocation: cursorLocation)
+        return contents
+    }
+    
+    ///Returns the contents of the current line beginning at the window's current cursor location specified.
+    public func contents(startingAt startingLocation: Location? = nil) -> String {
+        let currentLocation = cursor.location
+        var cchar = CChar()
+        if let startingLocation = startingLocation {
+            mvinstr(startingLocation.y, startingLocation.x, &cchar)
+        } else {
+            instr(&cchar)
+        }
+        try? cursor.move(toLocation: currentLocation)
+        return String(cString: &cchar).trimmingCharacters(in: .whitespaces)
+    }
 }
 
 //terminal attributes
@@ -152,17 +192,9 @@ extension Terminal {
 
 //Input
 extension Terminal {
-    public func getChar() -> Int32 {
-        return getch()
-    }
-    
-    public func getWintT() -> Int32 {
-        var wintT = wint_t()
-        get_wch(&wintT)
-        if wintT == KEY_BACKSPACE {
-            self.print("backspace")
-        }
-        return wintT
+    public func getKey() -> Key {
+        let rawValue = getch()
+        return Key(rawValue: rawValue)
     }
     
     public func getString() -> String {
@@ -170,17 +202,16 @@ extension Terminal {
         getstr(&cChar)
         return String(cString: &cChar)
     }
-    
-
 }
 
 //Output attributes
 extension Terminal {
     public var attributes: Attributes {
-        var colorPair : CShort = 0
+        var colorPairIndex : CShort = 0
         var attrT = attr_t()
-        attr_get(&attrT, &colorPair, nil)
-        return Attributes(rawValue: attrT)
+        attr_get(&attrT, &colorPairIndex, nil)
+        let colorPair = Colors.shared.colorPairs[Int(colorPairIndex)]
+        return [Attributes(rawValue: attrT), .colorPair(colorPair)]
     }
     
     ///Turns on specified text attributes for the Terminal output
@@ -199,88 +230,39 @@ extension Terminal {
     }
     
     ///Sets the text attributes for the Terminal to stdout
-    public func setAttributesToStandOut() {
+    public func setAttributesToStdOut() {
         standout()
     }
+
     
-    public func deleteCurrentCharacter() {
-        delch()
-    }
-    
-    public func deleteLastCharacter() {
-        let location = Location(x: cursor.location.x - 1, y: cursor.location.y)
-        deletCharacter(atLocation: location)
-    }
-    
-    public func deletCharacter(atLocation location: Location) {
-        mvdelch(location.y, location.x)
-    }
+
 }
 
 //Output
 extension Terminal {
     ///Prints a single character to the screen and advances the cursor postion
-    public func print(char: Int32) {
-        addch(chtype(char))
-    }
-    
-    
-    public func print(_ string: String) {
-        addstr(string)
-    }
-    
-    public func print(_ string: String, location: Location? = nil, attributes: Attributes? = nil, colorPair: ColorPair? = nil) {
-        if let attributes = attributes {
-            turnOnAttributes(attributes)
+    public func print(key: Key, ignoreControlKeys: Bool = true) {
+        if ignoreControlKeys {
+            if key.isPrintableControlKey || key.type == .characterKey {
+                addch(chtype(key.rawValue))
+            }
+        } else if key.type != .negKey {
+            addch(chtype(key.rawValue))
         }
-        if let colorPair = colorPair,
-            let index = colors?.indexFor(colorPair: colorPair) {
-            attron(COLOR_PAIR(index))
+    }
+    
+    public func print(_ string: String, attributes: Attributes? = nil, location: Location? = nil) {
+        let terminalAttributes = self.attributes
+        if let attributes = attributes {
+            setAttributes(attributes)
         }
         if let location = location {
             mvaddstr(location.y, location.x, string)
         } else {
             addstr(string)
         }
-        if let attributes = attributes {
-            turnOffAttributes(attributes)
-        }
-        if let colorPair = colorPair,
-           let index = colors?.indexFor(colorPair: colorPair) {
-            attroff(COLOR_PAIR(index))
-        }
+        setAttributes(terminalAttributes)
     }
-    
-    public func print(_ string: String, location: Location? = nil, attributes: Attributes? = nil, color: Color? = nil) {
-        if let attributes = attributes {
-            turnOnAttributes(attributes)
-        }
-        if let colors = colors,
-           let color = color {
-            let colorPair = ColorPair(foreground: color, background: colors.palette.defaultPair().background, name: "")
-            let index = colors.indexFor(colorPair: colorPair)
-            attron(COLOR_PAIR(index))
-        }
-        if let location = location {
-            mvaddstr(location.y, location.x, string)
-        } else {
-            addstr(string)
-        }
-        if let attributes = attributes {
-            turnOffAttributes(attributes)
-        }
-        if let colors = colors,
-           let color = color {
-            let colorPair = ColorPair(foreground: color, background: colors.palette.defaultPair().background, name: "")
-            let index = colors.indexFor(colorPair: colorPair)
-            attroff(COLOR_PAIR(index))
-        }
-    }
-    
- 
-    
-
-    
 }
 
 

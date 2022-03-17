@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import ncurses
 
 public struct Attributes: OptionSet {
     public var rawValue: UInt32
@@ -31,9 +32,19 @@ public struct Attributes: OptionSet {
     //#define A_ALTCHARSET    NCURSES_BITS(1U,14)
     public static let altCharSet = Attributes(rawValue: 1 << (8 + 14))
     //#define A_CHARTEXT    (NCURSES_BITS(1U,0) - 1U)
+    //#define A_COLOR        NCURSES_BITS(((1U) << 8) - 1U,0)
+    public static func color(_ color: Color) -> Attributes {
+        guard let backgroundColor = Colors.shared.palette?.defaultPair().background else {
+            return Attributes(rawValue: UInt32(COLOR_PAIR(0)))
+        }
+        let colorPair = ColorPair(foreground: color, background: backgroundColor)
+        return Attributes(rawValue: UInt32(COLOR_PAIR(Colors.shared.indexFor(colorPair: colorPair))))
+    }
+    public static func colorPair(_ colorPair: ColorPair) -> Attributes {
+        return Attributes(rawValue: UInt32(COLOR_PAIR(Colors.shared.indexFor(colorPair: colorPair))))
+    }
     //need to check this
     //static let charText = Attributes(rawValue: 1 << 8 - 1)
-    
     /*
                    A_NORMAL        Normal display (no highlight)
                    A_STANDOUT      Best highlighting mode of the terminal.
@@ -56,7 +67,7 @@ public struct Attributes: OptionSet {
     #define A_NORMAL    (1U - 1U)
     #define A_ATTRIBUTES    NCURSES_BITS(~(1U - 1U),0)
     #define A_CHARTEXT    (NCURSES_BITS(1U,0) - 1U)
-    #define A_COLOR        NCURSES_BITS(((1U) << 8) - 1U,0)
+    
     #define A_STANDOUT    NCURSES_BITS(1U,8)
     #define A_UNDERLINE    NCURSES_BITS(1U,9)
     #define A_REVERSE    NCURSES_BITS(1U,10)

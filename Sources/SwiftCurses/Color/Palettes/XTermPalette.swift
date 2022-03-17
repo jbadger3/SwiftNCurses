@@ -1,6 +1,11 @@
+//  Created by Jonathan Badger on 1/3/22.
+
 import Foundation
 import ncurses
 
+/**
+ A 256 color palette based on [XTerm](https://en.wikipedia.org/wiki/Xterm) colors.  A table of swatches can be found [here](https://www.ditig.com/256-colors-cheat-sheet).
+ */
 public struct XTermPalette: ColorPalette {
     public let Black = Color(index: 0, r: 0, g: 0, b: 0)
     public let Maroon = Color(index: 1, r: 502, g: 0, b: 0)
@@ -271,7 +276,7 @@ public struct XTermPalette: ColorPalette {
         }
         return colors
     }
-
+    ///White text on a black background
     public func defaultPair() -> ColorPair {
         return ColorPair(foreground: XTermPalette().White, background: XTermPalette().Black)
     }

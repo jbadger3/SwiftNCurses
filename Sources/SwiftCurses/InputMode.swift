@@ -11,14 +11,13 @@ import Foundation
  Terminal input modes
  */
 public enum InputMode {
-    ///
     /// Makes all keypresses immediately available.
     case raw
     
     /// The results of input are buffered until a newline or carrage return.  This the default terminal mode, sometimes refereed to as 'cooked' mode.
     case noraw
     
-    /// Makes keypresses immediately available, except ctrl-c and ctrl-z are passed to the terminal driver allowing for
+    /// Makes keypresses immediately available, except ctrl-c and ctrl-z are passed to the terminal driver for program control
     case cbreak
     
     /// The results of input are buffered until a newline or carrage return.  This the default terminal mode, sometimes refereed to as 'cooked' mode.
