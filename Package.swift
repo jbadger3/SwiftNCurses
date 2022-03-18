@@ -9,21 +9,21 @@ var pkgConfig: String? = nil
 #endif
 
 let package = Package(
-    name: "SwiftCurses",
+    name: "SwiftNCurses",
     products: [
         .library(
-            name: "SwiftCurses",
-            targets: ["SwiftCurses"]),
+            name: "SwiftNCurses",
+            targets: ["SwiftNCurses"]),
     ],
     targets: [
         .systemLibrary(name: "Cncurses", pkgConfig: pkgConfig, providers: [.apt(["ncurses"]), .brew(["ncurses"])]),
         .target(
-            name: "SwiftCurses",
+            name: "SwiftNCurses",
             dependencies: ["Cncurses"],
             cSettings: [.define("__NCURSES_H", .when(platforms: [.macOS]))]),
         .testTarget(
             name: "SwiftCursesTests",
-            dependencies: ["SwiftCurses"],
+            dependencies: ["SwiftNCurses"],
             cSettings: [.define("__NCURSES_H", .when(platforms: [.macOS]))])
     ]
 )
