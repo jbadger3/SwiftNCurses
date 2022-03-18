@@ -7,7 +7,7 @@ import Foundation
 import ncurses
 
 /**
- 
+
  The `index` for a color should correspond to the color scheme used by the terminal
  */
 public class Colors {
@@ -27,16 +27,16 @@ public class Colors {
         }
     }
     var colorPairs: [ColorPair] = []
-    
+
     public static var maxColors: Int {
         return Int(COLORS)
     }
     public static var maxColorPairs: Int {
         return Int(COLOR_PAIRS)
     }
-    
+
     internal init() {}
-    
+
     private func initializeColors() {
         guard let palette = palette else {
             return
@@ -45,7 +45,7 @@ public class Colors {
             init_color(color.index, color.r, color.g, color.b)
         }
     }
-    
+
     private func initializeDefaultColorPair() {
         guard let palette = palette else {
             return
@@ -54,14 +54,14 @@ public class Colors {
         setColorPair(colorPair: colorPair)
         assume_default_colors(Int32(colorPair.foreground.index), Int32(colorPair.background.index))
     }
-    
+
     private func setColorPair(colorPair: ColorPair) {
         if !colorPairs.contains(colorPair) && colorPairs.count < Colors.maxColorPairs {
             colorPairs.append(colorPair)
             init_pair(Int16(colorPairs.count - 1), colorPair.foreground.index, colorPair.background.index)
         }
     }
-    
+
     internal func indexFor(colorPair: ColorPair) -> Int32 {
         guard canChangeColors else { return 0 }
         if let index = colorPairs.firstIndex(of: colorPair) {
@@ -72,7 +72,3 @@ public class Colors {
         }
     }
 }
-
-
-
-
