@@ -18,6 +18,9 @@ public class Colors {
     public var canChangeColors: Bool {
         return can_change_color()
     }
+    ///Indicates if colored output is enabled.
+    public internal(set) var colorsEnabled: Bool = false
+
     public internal(set) var palette: ColorPalette? = nil {
         didSet {
             if canChangeColors {
