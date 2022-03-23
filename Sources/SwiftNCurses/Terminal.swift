@@ -40,6 +40,11 @@ public class Terminal {
      chtype termattrs(void);
      char *termname(void);
      */
+    //*** Used for unit testing
+    private var screen: OpaquePointer!
+    private var stdinP: UnsafeMutablePointer<FILE>!
+    private var stdoutP: UnsafeMutablePointer<FILE>!
+    //***
 
     public private(set) var standardScreen: UnsafeMutablePointer<WINDOW>!
     ///The current input mode for the current program (defaults to raw). See ``InputMode`` for a list of all available modes.
@@ -58,8 +63,13 @@ public class Terminal {
         var colorPairIndex : CShort = 0
         var attrT = attr_t()
         attr_get(&attrT, &colorPairIndex, nil)
-        let colorPair = Colors.shared.colorPairs[Int(colorPairIndex)]
-        return [Attributes(rawValue: attrT), .colorPair(colorPair)]
+        var currentAttributes = Attributes(rawValue: attrT)
+        if Int(colorPairIndex) < Colors.shared.colorPairs.count{
+            let colorPair = Colors.shared.colorPairs[Int(colorPairIndex)]
+            let colorAttributtes: Attributes = [.colorPair(colorPair)]
+            currentAttributes = currentAttributes.union(colorAttributtes)
+        }
+        return currentAttributes
     }
 
     ///Turns on specified text attributes for the Terminal output
@@ -83,10 +93,22 @@ public class Terminal {
     }
 
     public init(mode: InputMode = .raw, echoing: Bool = false, keypadEnabled: Bool = true, colorPalette: ColorPalette? = XTermPalette() as ColorPalette) {
-        // sets the locale and associated available characters based on the calling program
-        setlocale(LC_ALL, "")
-        initscr()
-        intrflush(stdscr, false)
+        //check for unit testing
+        if ProcessInfo.processInfo.environment["SWIFTNCURSES_TESTS"] != nil {
+            if let tempDirectory = URL(string:NSTemporaryDirectory()) {
+                let inputURL = tempDirectory.appendingPathComponent("\(UUID())")
+                let outputURL = tempDirectory.appendingPathComponent("\(UUID())")
+                self.stdinP = fopen(inputURL.absoluteString, "w")!
+                self.stdoutP = fopen(outputURL.absoluteString, "w")!
+                self.screen = newterm(nil, self.stdoutP, self.stdinP)
+                set_term(self.screen)
+            }
+        } else {
+            // sets the locale and associated available characters based on the calling program
+            setlocale(LC_ALL, "")
+            initscr()
+            intrflush(stdscr, false)
+        }
         self.standardScreen = stdscr
         self.cursor = Cursor(window: stdscr)
         self.set(mode: mode)
@@ -100,10 +122,14 @@ public class Terminal {
         }
     }
 
+
     deinit {
         // release memory and return terminal to normal mode
         endwin()
-        
+        if ProcessInfo.processInfo.environment["SWIFTNCURSES_TESTS"] != nil {
+
+        }
+        // NEED TO RELEASE TEMP FILES AND SCREEN FOR TESTING
     }
 
     /**
@@ -252,7 +278,7 @@ public class Terminal {
         if let location = location {
             mvaddstr(location.y, location.x, string)
         } else {
-            addstr(string)
+            addstr(string.cString(using:.utf8))
         }
         setAttributes(terminalAttributes)
     }

@@ -115,7 +115,6 @@ final class TerminalTests: XCTestCase {
         """
         addstr(expectedContent.cString(using: .utf8))
         let receivedContent = sut.allContent()
-        print(receivedContent)
         XCTAssertEqual(receivedContent, expectedContent)
     }
 
@@ -137,19 +136,30 @@ final class TerminalTests: XCTestCase {
         XCTAssertEqual(location, expectedLocation)
     }
 
-    func test_printKey_givenIgnoreControlKeysFalse_whenKeyIsNotprintableControl_printsKey() {
-
-
+    func test_printKey_givenIgnoreControlKeysFalse_whenKeyIsNonPrintableControl_printsKey() {
+        let testKey = Key(rawValue: 3) //cntr c ^C
+        sut.print(key: testKey, ignoreControlKeys: false)
+        let retrievedString = sut.contents(startingAt: Location(x:0,y:0))
+        let expectedString = "^C"
+        XCTAssertEqual(retrievedString, expectedString)
     }
 
-    func test_printString() {
-
-
+    func test_printString_whenAttributesAndLocationNil_printsString() {
+        let expectedString = "Hello"
+        sut.print(expectedString)
+        let retrievedString = sut.contents(startingAt: Location(x:0,y:0))
+        XCTAssertEqual(retrievedString, expectedString)
     }
 
-    func test_mockTerminal() {
-        let terminal = MockTerminal()
+    func test_printString_whenAttributesNilAndLocationSpecified_printsAtCorrectLocation() {
+        let testLocation = Location(x: 3, y: 5)
+        let expetedString = "Hello World!"
+        sut.print(expetedString, location: testLocation)
+        let retrievedContent = sut.contents(startingAt: testLocation)
+        XCTAssertEqual(retrievedContent, expetedString)
     }
+
+
 
 
 
