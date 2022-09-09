@@ -24,6 +24,7 @@ let package = Package(
         .testTarget(
             name: "SwiftCursesTests",
             dependencies: ["SwiftNCurses", "Cncurses"],
-            cSettings: [.define("__NCURSES_H", .when(platforms: [.macOS]))])
+            cSettings: [.define("__NCURSES_H", .when(platforms: [.macOS])),
+                        .define("NCURSES_UNCTRL_H_incl")])
     ]
 )

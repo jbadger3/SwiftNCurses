@@ -1,5 +1,9 @@
+# *This project has been archived and is not maintained*
+
+
 # SwiftNCurses
 Swift bindings to the ncurses library
+
 
 
 ### MacOS Notes
